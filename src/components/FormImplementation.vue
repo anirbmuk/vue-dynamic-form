@@ -6,22 +6,36 @@
 
       <!-- Dynamically generate input fields based on count.input -->
       <!-- Each input gets a unique key and ID for proper Vue reactivity -->
-      <div v-for="i in count.input" :key="`input-${i}`" class="form-group">
-        <label :for="`input-${i}`">Input {{ i }}:</label>
-        <input :id="`input-${i}`" type="text" v-model="objectRefs[`input-${i}`].value" autocomplete="off" />
+      <div class="form-container">
+        <div v-for="i in count.input" :key="`input-${i}`" class="form-group">
+          <label :for="`input-${i}`">Input {{ i }}:</label>
+          <input :id="`input-${i}`" type="text" v-model="objectRefs[`input-${i}`].value" autocomplete="off" />
+        </div>
       </div>
 
       <!-- Dynamically generate select dropdowns based on count.select -->
       <!-- Each select gets a unique key and ID, with predefined options -->
-      <div v-for="j in count.select" :key="`select-${j}`" class="form-group">
-        <label :for="`select-${j}`">Select {{ j }}:</label>
-        <select :id="`select-${j}`" v-model="objectRefs[`select-${j}`].value">
-          <option value="option1">Option 1</option>
-          <option value="option2">Option 2</option>
-          <option value="option3">Option 3</option>
-          <option value="option4">Option 4</option>
-          <option value="option5">Option 5</option>
-        </select>
+      <div class="form-container">
+        <div v-for="j in count.select" :key="`select-${j}`" class="form-group">
+          <label :for="`select-${j}`">Select {{ j }}:</label>
+          <select :id="`select-${j}`" v-model="objectRefs[`select-${j}`].value">
+            <option value="option1">Option 1</option>
+            <option value="option2">Option 2</option>
+            <option value="option3">Option 3</option>
+            <option value="option4">Option 4</option>
+            <option value="option5">Option 5</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Dynamically generate select dropdowns based on count.select -->
+      <!-- Each select gets a unique key and ID, with predefined options -->
+      <div class="form-container">
+        <div v-for="k in count.yesno" :key="`yesno-${k}`" class="form-group">
+          <label>Toggle {{ k }}
+            <YesNo :id="`yesno-${k}`" v-model="objectRefs[`yesno-${k}`].value" />
+          </label>
+        </div>
       </div>
 
       <!-- Debug section: Display all current form field values -->
@@ -48,6 +62,7 @@ import {
   type Ref
 } from 'vue';
 import type { FormDefinition } from '@/types/form-definition';
+import YesNo from '@/components/YesNo.vue';
 
 const props = defineProps({
   count: {
@@ -58,7 +73,7 @@ const props = defineProps({
 
 // Reactive state management for dynamic form fields
 // objectRefs: Stores reactive refs for each form field (input-1, input-2, select-1, etc.)
-const objectRefs: Record<string, Ref<string>> = {};
+const objectRefs: Record<string, Ref<string | 'yes' | 'no'>> = {};
 
 // objectRefKeys: Reactive Set to track which keys currently exist
 // Used for template iteration and cleanup logic
@@ -95,6 +110,18 @@ watch(props.count, (newCount) => {
     if (objectRefs[key] === undefined) {
       console.log(`Creating ref for ${key}`);
       const refValue = ref<string>('');
+      objectRefs[key] = refValue;
+    }
+  }
+
+  // Create reactive refs for yesno fields based on newCount.select
+  for (let k = 1; k <= newCount.yesno; k++) {
+    const key = `yesno-${k}`;
+    objectRefKeys.add(key);
+    // Only create new ref if it doesn't already exist
+    if (objectRefs[key] === undefined) {
+      console.log(`Creating ref for ${key}`);
+      const refValue = ref<'yes' | 'no'>('yes');
       objectRefs[key] = refValue;
     }
   }

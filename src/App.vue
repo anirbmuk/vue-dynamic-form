@@ -23,12 +23,14 @@ import VueFormImplementation from './components/FormImplementation.vue'
 const initialFormDefinition: FormDefinition = {
   input: 0,
   select: 0,
+  yesno: 0,
 };
 
 const formDefinition = reactive<FormDefinition>(initialFormDefinition);
 
-const updateFormDefinition = ({ input, select }: FormDefinition) => {
+const updateFormDefinition = ({ input, select, yesno }: FormDefinition) => {
   formDefinition.input = input;
   formDefinition.select = select;
+  formDefinition.yesno = yesno;
 };
 </script>
